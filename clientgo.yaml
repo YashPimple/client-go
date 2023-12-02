@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: clientgo
+  name: clientgo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: clientgo
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: clientgo
+    spec:
+      containers:
+      - image: yashpimple22/client-go:0.1.0
+        name: clientgo
+        resources: {}
+status: {}
