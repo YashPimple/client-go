@@ -18,8 +18,8 @@ func main() {
 		//handle err
 		fmt.Println("Error in building config fron flags\n", err.Error())
 		config, err := rest.InClusterConfig()
-		if err != nil{
-			fmt.Println("Erro in getting inclusterconfig()\n", err.Error())
+		if err != nil {
+			fmt.Println("Error in getting inclusterconfig()\n", err.Error())
 		}
 
 	}

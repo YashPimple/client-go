@@ -16,7 +16,7 @@ spec:
         app: clientgo
     spec:
       containers:
-      - image: yashpimple22/client-go:0.1.0
+      - image: yashpimple/clientgo:0.1.0
         name: clientgo
         resources: {}
 status: {}
