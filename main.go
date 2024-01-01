@@ -7,48 +7,52 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 func main() {
-	kubeconfig := flag.String("kubeconfig", "/Users/yashnileshpimple/.kube/config", "Location to config file")
+	kubeconfig := flag.String("kubeconfig", "/Users/yashnileshpimple/.kube/config", "Location to our config file")
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	if err != nil {
-		//handle err
-		fmt.Println("Error in building config fron flags\n", err.Error())
-		config, err := rest.InClusterConfig()
-		if err != nil {
-			fmt.Println("Error in getting inclusterconfig()\n", err.Error())
-		}
-
+		fmt.Println("Unable to find kubeconfig file")
 	}
 
+	var namespace string
+	fmt.Println("Enter the Namespace to get resources")
+	fmt.Scan(&namespace)
+	// use to interact with diff resources present in k8 it like an set of clients
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		//handle err
-		fmt.Println("error in creating clientset\n", err.Error())
+		fmt.Println("clienset not running")
 	}
-	//pods are from corev1 resources()
+
 	ctx := context.Background()
-	pods, err := clientset.CoreV1().Pods("keptn-lifecycle-toolkit-system").List(ctx, metav1.ListOptions{})
+	pods, err := clientset.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
-		//handle err
-		fmt.Println("error %s, while listing all the pods from Keptn-lifecycle-namespace\n", err.Error())
+		fmt.Println("Unable to find resources pod")
 	}
-	fmt.Println("Pods from keptn-lifecycle-toolkit-system namespace are")
+	fmt.Println("Pods in following namespace are:")
 	for _, pod := range pods.Items {
-		fmt.Printf("%s", pod.Name)
+		fmt.Printf("%s\n", pod.Name)
 	}
 
-	deployments, err := clientset.AppsV1().Deployments("keptn-lifecycle-toolkit-system").List(ctx, metav1.ListOptions{})
+	deployments, err := clientset.AppsV1().Deployments(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
-		//handle funct
-		fmt.Println("listing deployments %s\n", err.Error())
+		fmt.Println("Unable to find resource deployment")
 	}
-	fmt.Println("Deployments from keptn-lifecycle-toolkit-system namespace are")
+	fmt.Println("Deployments in following namespace are:")
 	for _, deployment := range deployments.Items {
-		fmt.Printf("%s", deployment.Name)
+		fmt.Printf("%s\n", deployment.Name)
 	}
 
+	services, err := clientset.CoreV1().Services(namespace).List(ctx, metav1.ListOptions{})
+	if err != nil {
+		fmt.Println("Unable to find resource service")
+	}
+	fmt.Println("Service in following namespace are:")
+	for _, service := range services.Items {
+		fmt.Printf("%s\n", service.Name)
+	}
+	// fmt.Println(clientset)
+	// fmt.Println(config)
 }
