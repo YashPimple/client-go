@@ -7,14 +7,19 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 )
 
 func main() {
-	kubeconfig := flag.String("kubeconfig", "/Users/yashnileshpimple/.kube/config", "Location to our config file")
+	kubeconfig := flag.String("kubeconfig", ".kube/config", "Location to our config file")
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	if err != nil {
-		fmt.Println("Unable to find kubeconfig file")
+		fmt.Printf("error %s building kubeconfig file", err.Error())
+		config, err := rest.InClusterConfig()
+		if err != nil {
+			fmt.Print("Error %s getting incluster config", err.Error())
+		}
 	}
 
 	var namespace string
@@ -23,7 +28,7 @@ func main() {
 	// use to interact with diff resources present in k8 it like an set of clients
 	clientset, err := kubernetes.NewForConfig(config)
 	if err != nil {
-		fmt.Println("clienset not running")
+		fmt.Printf("Error %s creating clienset", err.Error())
 	}
 
 	ctx := context.Background()
