@@ -14,7 +14,11 @@ func main() {
 	kubeconfig := flag.String("kubeconfig", "/.kube/config", "Location to our config file")
 	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
 	if err != nil {
-		fmt.Println("Unable to find kubeconfig file")
+		fmt.Printf("error %s building kubeconfig file", err.Error())
+		config, err := rest.InClusterConfig()
+		if err != nil {
+			fmt.Print("Error %s getting incluster config", err.Error())
+		}
 	}
 
 	var namespace string
@@ -29,7 +33,7 @@ func main() {
 	ctx := context.Background()
 	pods, err := clientset.CoreV1().Pods(namespace).List(ctx, metav1.ListOptions{})
 	if err != nil {
-		fmt.Println("Unable to find resources pod")
+		fmt.Printf("Error %s creating clienset", err.Error())
 	}
 	fmt.Println("Pods in following namespace are:")
 	for _, pod := range pods.Items {
