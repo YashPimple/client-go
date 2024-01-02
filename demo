@@ -1,0 +1,26 @@
+apimachinery pkg
+
+runtime.oject interface
+
+
+
+
+pod 
+    typeMeta
+        kind
+        apiVersion
+
+pod (DeepCopyObject)
+
+
+
+k8s object
+    typeMeta
+        kind
+        apiVersion
+    objectmeta
+        namespace
+        name 
+    spec
+    status  //controller update about the state
+       true, done
