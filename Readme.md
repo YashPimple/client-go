@@ -1,3 +1,8 @@
+## Client-go 
+
+A very simple application that uses client-go to list `pods`, `service` and deployments from respected namespace.
+
+
 ## Running your client-go application as a pod in a cluster
 
 - `docker build -t clientgo:0.1.0 .`
