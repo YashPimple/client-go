@@ -19,4 +19,4 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s
 RUN go build -o myapp .
 
 # Run the Go app
-CMD
+CMD ["./myapp"]
