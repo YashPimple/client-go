@@ -16,7 +16,5 @@ RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s
     && mv ./kubectl /usr/local/bin/kubectl
 
 # Build the Go app
-RUN go build -o myapp .
-
 # Run the Go app
-CMD ["./myapp"]
+CMD ["go", "run","main.go"]
