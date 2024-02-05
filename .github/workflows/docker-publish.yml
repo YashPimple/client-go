@@ -32,7 +32,7 @@ jobs:
 
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v7
+        uses: docker/metadata-action@latest
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
