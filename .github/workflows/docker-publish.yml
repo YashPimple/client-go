@@ -38,7 +38,6 @@ jobs:
         env:
           TAG: ${{ steps.ref }}
         run: |
-              COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
               docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ github.repository }}:${TAG} -f Dockerfile.release .    
 
       - name: Push the image to Harbor
