@@ -7,8 +7,7 @@ on:
       - "main"
 
 env:
-  IMAGE_NAME: ${{ github.repository }}
-  Dockerfile: Dockerfile
+  Dockerfile: Dockerfile.release
   PROJECTS: gpu-cloud
 
 jobs:
@@ -33,34 +32,19 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3.0.0 # v3.0.0
 
-      - name: docker login
-        uses: docker/login-action@v1
-        with:
-          registry: reg.neev.work
-          username: ${{ secrets.HARBOR_USERNAME  }}
-          password: ${{ secrets.HARBOR_PASSWORD }}
-
-      # - name: Extract Docker metadata
-      #   id: meta
-      #   uses: docker/metadata-action@v5.0.0 # v5.0.0
-      #   with:
-      #     images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-      # - name: Build Docker image
-      #   id: build-image
-      #   run: |
-      #     docker build -t ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.ref }} -f ${{ env.Dockerfile }} .
-
-      # - name: Push Docker image to Harbor
-      #   if: github.event_name != 'pull_request'
-      #   run: docker push ${{ env.REGISTRY }}/${{ env.REPOSITORY }}:${{ github.ref }}
+      - name: Log in to Harbor
+        run: |
+              echo ${{ secrets.HARBOR_USERNAME }} | docker login --username ${{ secrets.HARBOR_USERNAME }} --password-stdin harbor.${{secrets.HARBOR_REGISTRY}}
+      
       - name: Build and tag image
+        env:
+          TAG: ${{ steps.ref }}
         run: |
               COMMIT_SHA=$(echo $GITHUB_SHA | cut -c1-7)
-              docker build -t ${{ env.REGISTRY }}/gpu-cloud/${{ github.repository }}:$COMMIT_SHA -f Dockerfile .    
+              docker build -t harbor.${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ github.repository }}:${TAG} -f Dockerfile.release .    
 
       - name: Push the image to Harbor
-        run: docker push ${{ env.REGISTRY }}/gpu-cloud/${{ github.repository }}:$COMMIT_SHA
+        run: docker push harbor.${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ github.repository }}:${TAG}
   
       - name: Sign the published Docker image
         if: github.event_name != 'pull_request'
