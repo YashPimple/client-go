@@ -38,7 +38,7 @@ jobs:
         env:
           TAG: ${{ steps.ref }}
         run: |
-              docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ github.run_number }} -f Dockerfile.release .    
+              docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ github.run_number }} -f Dockerfile .    
 
       - name: Push the image to Harbor
         run: docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ github.run_number }}
