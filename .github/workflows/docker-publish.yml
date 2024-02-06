@@ -9,7 +9,7 @@ on:
 env:
   REGISTRY: reg.neev.work
   IMAGE_NAME: ${{ github.repository }}
-  Dockerfile: Dockerfile.release
+  Dockerfile: Dockerfile
   # PROJECTS: gpu-cloud
 
 jobs:
