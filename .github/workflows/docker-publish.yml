@@ -33,7 +33,8 @@ jobs:
         uses: docker/setup-buildx-action@v3.0.0 # v3.0.0
 
       - name: Log in to Harbor
-        run: docker login --username ${{ secrets.HARBOR_USERNAME }} --password ${{ secrets.HARBOR_PASSWORD }} ${{ secrets.HARBOR_REGISTRY }}
+        run: |
+              echo ${{ secrets.HARBOR_PASSWORD }} | docker login --username ${{ secrets.HARBOR_USER_NAME }} --password-stdin ${{ secrets.HARBOR_PASSWORD}}
       
       - name: Build and tag image
         env:
