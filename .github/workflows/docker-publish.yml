@@ -37,7 +37,7 @@ jobs:
         with:
           Password: ${{ secrets.HARBOR_PASSWORD }}
           Username: ${{ secrets.HARBOR_USERNAME }}
-          command: echo $Password | docker login --username $Username --password-stdin $Password
+          Registry: ${{ secrets.HARBOR_REGISTRY }}
       
       - name: Build and tag image
         env:
