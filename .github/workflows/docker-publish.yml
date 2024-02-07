@@ -49,7 +49,7 @@ jobs:
 
       - name: Push the image to Harbor
         env:
-          TAG_NAME: ${{ gitthib.ref }}  # Get the tag name without prefix
+          TAG_NAME: ${{ github.ref }}  # Get the tag name without prefix
         run: |
           TAGS=$(echo "${env.TAG_NAME}" | sed 's|refs/heads/||')
           docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAGS}
