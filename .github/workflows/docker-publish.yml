@@ -2,10 +2,10 @@ name: Build and Push
 
 on:
   push:
-    tags: 
+    tags:
       - 'v*.*.*'  # Trigger only on tag pushes
-  branches:
-    - "main"
+    branches:
+      - "main"
 
 env:
   Dockerfile: Dockerfile
