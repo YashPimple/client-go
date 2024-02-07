@@ -54,6 +54,7 @@ jobs:
         env:
           TAG_NAME: ${{ github.ref }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
+          
         run: |
           TAGS=$(echo "${TAG_NAME}" | cut -d'/' -f 3)
           echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
