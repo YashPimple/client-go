@@ -38,12 +38,12 @@ jobs:
         env:
           tag_name: ${{ github.ref }}
         run: |
-              docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ env.tag_name }} -f Dockerfile .    
+              docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ env.tag_name#refs/tags/ }} -f Dockerfile .    
 
       - name: Push the image to Harbor
         env:
           tag_name: ${{ github.ref }}
-        run: docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ env.tag_name }}
+        run: docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ env.tag_name#refs/tags/ }}
   
       - name: Sign the published Docker image
         if: github.event_name != 'pull_request'
