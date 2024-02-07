@@ -38,17 +38,17 @@ jobs:
 
       - name: Build and tag image
         env:
-          TAG_NAME: ${{ github.ref }}
+          TAG: ${{ github.event.release.tag_name }}
         run: |
           VERSION=$(echo "${TAG_NAME}" | cut -d'/' -f 3)
-          docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${VERSION} -f Dockerfile .
+          docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAG} -f Dockerfile .
 
       - name: Push the image to Harbor
         env:
-          TAG_NAME: ${{ github.ref }}  # Get the tag name without prefix
+          TAG: ${{ github.event.release.tag_name }}
         run: |
           VERSION=$(echo "${TAG_NAME}" | cut -d'/' -f 3)
-          docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${VERSION}
+          docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAG}
 
       - name: Sign the published Docker image
         if: github.event_name != 'pull_request'
