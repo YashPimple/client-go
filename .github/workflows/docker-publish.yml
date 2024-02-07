@@ -52,7 +52,9 @@ jobs:
 
       - name: Sign the published Docker image
         if: github.event_name != 'pull_request'
-        env:  # Get the tag name without prefix
+        env:
+          TAG: ${{ github.event.release.tag_name }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: |
           echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
