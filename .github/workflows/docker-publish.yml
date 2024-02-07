@@ -42,20 +42,21 @@ jobs:
 
       - name: Build and tag image
         env:
-          TAG_NAME: ${{ steps.get_tag_name.outputs.TAG_NAME }}  # Get the tag name without prefix
+          TAG_NAME: ${{ github.ref }}
         run: |
-          docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAG_NAME} -f Dockerfile .
+          TAGS=$(echo "${env.TAG_NAME}" | sed 's|refs/heads/||')
+          docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAGS} -f Dockerfile .
 
       - name: Push the image to Harbor
         env:
-          TAG_NAME: ${{ steps.get_tag_name.outputs.TAG_NAME }}  # Get the tag name without prefix
+          TAG_NAME: ${{ gitthib.ref }}  # Get the tag name without prefix
         run: |
-          docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAG_NAME}
+          TAGS=$(echo "${env.TAG_NAME}" | sed 's|refs/heads/||')
+          docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAGS}
 
       - name: Sign the published Docker image
         if: github.event_name != 'pull_request'
-        env:
-          TAG_NAME: ${{ steps.get_tag_name.outputs.TAG_NAME }}  # Get the tag name without prefix
+        env:  # Get the tag name without prefix
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: |
-          echo "${TAG_NAME}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+          echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
