@@ -44,15 +44,15 @@ jobs:
         env:
           TAG_NAME: ${{ github.ref }}
         run: |
-          TAGS=$(echo "${env.TAG_NAME}" | sed 's|refs/heads/||')
-          docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAGS} -f Dockerfile .
+          VERSION=$(echo "${TAG_NAME}" | cut -d'/' -f 3)
+          docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${VERSION} -f Dockerfile .
 
       - name: Push the image to Harbor
         env:
           TAG_NAME: ${{ github.ref }}  # Get the tag name without prefix
         run: |
-          TAGS=$(echo "${env.TAG_NAME}" | sed 's|refs/heads/||')
-          docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAGS}
+          VERSION=$(echo "${TAG_NAME}" | cut -d'/' -f 3)
+          docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${VERSION}
 
       - name: Sign the published Docker image
         if: github.event_name != 'pull_request'
