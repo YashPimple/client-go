@@ -36,17 +36,18 @@ jobs:
       
       - name: Build and tag image
         env:
-          TAG: ${{ github.ref }}
-          IMAGE_TAG: ${{ github.ref }}
+          tag_name: ${{ github.ref }}
         run: |
-              docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ IMAGE_TAG }} -f Dockerfile .    
+              docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ env.tag_name }} -f Dockerfile .    
 
       - name: Push the image to Harbor
-        run: docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ IMAGE_TAG }}
+        env:
+          tag_name: ${{ github.ref }}
+        run: docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${{ env.tag_name }}
   
       - name: Sign the published Docker image
         if: github.event_name != 'pull_request'
         env:
-          TAG: ${{ steps.ref }}
+          TAGS: ${{ steps.ref }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
-        run: echo "${TAG}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+        run: echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
