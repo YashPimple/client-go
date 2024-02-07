@@ -8,7 +8,6 @@ on:
 
 env:
   Dockerfile: Dockerfile
-  PROJECTS: gpu-cloud
 
 jobs:
   build:
@@ -21,37 +20,40 @@ jobs:
 
       - name: Install cosign
         if: github.event_name != 'pull_request'
-        uses: sigstore/cosign-installer@v3.1.1
+        uses: sigstore/cosign-installer@v3.1.1 #v3.1.1
         with:
           cosign-release: 'v2.1.1'
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3.0.0
+        uses: docker/setup-buildx-action@v3.0.0 # v3.0.0
 
-      - name: Login to Harbor registry
+      - name: Docker login into Harbor registry
         uses: docker/login-action@v1
         with:
           registry: ${{ secrets.HARBOR_REGISTRY }}
-          username: ${{ secrets.HARBOR_USERNAME }}
+          username: ${{ secrets.HARBOR_USERNAME  }}
           password: ${{ secrets.HARBOUR_PASSWORD }}
-
+      
       - name: Build and tag image
         env:
-          TAG: ${{ github.event.release.tag_name }}
+          TAG_NAME: ${{ github.ref }}
         run: |
-          docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAG} -f Dockerfile .
+          TAGS=$(echo "${TAG_NAME}" | cut -d'/' -f 3)
+          echo ${TAG_NAME} ${TAGS}
+          docker build -t ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${ tag_name } -f ${Dockerfile} .    
 
       - name: Push the image to Harbor
         env:
-          TAG: ${{ github.event.release.tag_name }}
+           TAG_NAME: ${{ github.ref }}
         run: |
-          docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAG}
-
+          TAGS=$(echo "${TAG_NAME}" | cut -d'/' -f 3)
+          docker push ${{ secrets.HARBOR_REGISTRY }}/${{ env.PROJECTS }}/${{ secrets.REPOSITORY }}:${TAGS}
+  
       - name: Sign the published Docker image
         if: github.event_name != 'pull_request'
         env:
-          TAG: ${{ github.event.release.tag_name }}
-          TAG_NAME: ${{ github.event.release.tag_name }}
+          TAG_NAME: ${{ github.ref }}
           DIGEST: ${{ steps.build-and-push.outputs.digest }}
         run: |
-          echo "${TAG}" | xargs -I {} cosign sign --yes {}@${DIGEST}
+          TAGS=$(echo "${TAG_NAME}" | cut -d'/' -f 3)
+          echo "${TAGS}" | xargs -I {} cosign sign --yes {}@${DIGEST}
